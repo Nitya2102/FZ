@@ -1,22 +1,23 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Play, Pause, RotateCcw, Coffee } from 'lucide-react';
+import type { FocusTask } from '@/components/SubjectSelector';
 
 interface FocusTimerProps {
-  activeSubject: string | null;
+  activeTask: FocusTask | null;
 }
 
-const FOCUS_TIME = 25 * 60;
 const BREAK_TIME = 5 * 60;
 
-const FocusTimer = ({ activeSubject }: FocusTimerProps) => {
-  const [timeLeft, setTimeLeft] = useState(FOCUS_TIME);
+const FocusTimer = ({ activeTask }: FocusTimerProps) => {
+  const focusTime = (activeTask?.minutes ?? 25) * 60;
+  const [timeLeft, setTimeLeft] = useState(focusTime);
   const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [sessionsCompleted, setSessions] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const totalTime = isBreak ? BREAK_TIME : FOCUS_TIME;
+  const totalTime = isBreak ? BREAK_TIME : focusTime;
   const progress = ((totalTime - timeLeft) / totalTime) * 100;
 
   const formatTime = (s: number) => {
@@ -28,21 +29,28 @@ const FocusTimer = ({ activeSubject }: FocusTimerProps) => {
   const reset = useCallback(() => {
     setIsRunning(false);
     setIsBreak(false);
-    setTimeLeft(FOCUS_TIME);
+    setTimeLeft(focusTime);
     if (intervalRef.current) clearInterval(intervalRef.current);
-  }, []);
+  }, [focusTime]);
 
   const toggleBreak = useCallback(() => {
     setIsRunning(false);
     if (intervalRef.current) clearInterval(intervalRef.current);
     if (isBreak) {
       setIsBreak(false);
-      setTimeLeft(FOCUS_TIME);
+      setTimeLeft(focusTime);
     } else {
       setIsBreak(true);
       setTimeLeft(BREAK_TIME);
     }
-  }, [isBreak]);
+  }, [focusTime, isBreak]);
+
+  useEffect(() => {
+    setIsRunning(false);
+    setIsBreak(false);
+    setTimeLeft(focusTime);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, [focusTime]);
 
   useEffect(() => {
     if (isRunning) {
@@ -100,9 +108,9 @@ const FocusTimer = ({ activeSubject }: FocusTimerProps) => {
           >
             {formatTime(timeLeft)}
           </motion.span>
-          {activeSubject && (
+          {activeTask && (
             <span className="text-[10px] font-display uppercase tracking-[0.15em] text-muted-foreground mt-2 max-w-[120px] text-center truncate">
-              {activeSubject}
+              {activeTask.title}
             </span>
           )}
         </div>

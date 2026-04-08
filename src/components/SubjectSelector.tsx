@@ -1,111 +1,125 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { defaultSubjects, Subject } from '@/data/subjects';
-import { Plus, X, Eye, EyeOff } from 'lucide-react';
+import { Check, Plus, X } from 'lucide-react';
 
 interface SubjectSelectorProps {
-  activeSubject: string | null;
-  onSelect: (name: string | null) => void;
+  activeTaskId: string | null;
+  onSelect: (task: FocusTask | null) => void;
 }
 
-const SubjectSelector = ({ activeSubject, onSelect }: SubjectSelectorProps) => {
-  const [subjects, setSubjects] = useState<Subject[]>(defaultSubjects);
-  const [adding, setAdding] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [showNames, setShowNames] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'electronics' | 'telecom' | 'core'>('all');
+export interface FocusTask {
+  id: string;
+  title: string;
+  minutes: number;
+  done: boolean;
+}
 
-  const filtered = filter === 'all' ? subjects : subjects.filter(s => s.category === filter);
+const SubjectSelector = ({ activeTaskId, onSelect }: SubjectSelectorProps) => {
+  const [tasks, setTasks] = useState<FocusTask[]>([]);
+  const [newTitle, setNewTitle] = useState('');
+  const [newMinutes, setNewMinutes] = useState('25');
 
-  const addSubject = () => {
-    if (!newName.trim()) return;
-    const sub: Subject = { id: Date.now().toString(), name: newName.trim(), icon: '📘', category: 'core' };
-    setSubjects([...subjects, sub]);
-    setNewName('');
-    setAdding(false);
+  const createTask = () => {
+    const title = newTitle.trim();
+    const parsedMinutes = Number(newMinutes);
+    const minutes = Number.isFinite(parsedMinutes) ? Math.max(1, Math.min(240, Math.floor(parsedMinutes))) : 25;
+
+    if (!title) return;
+
+    const task: FocusTask = {
+      id: Date.now().toString(),
+      title,
+      minutes,
+      done: false,
+    };
+
+    setTasks(prev => [task, ...prev]);
+    setNewTitle('');
+    setNewMinutes('25');
   };
 
-  const removeSubject = (id: string) => {
-    setSubjects(subjects.filter(s => s.id !== id));
-    if (subjects.find(s => s.id === id)?.name === activeSubject) onSelect(null);
+  const removeTask = (id: string) => {
+    setTasks(prev => prev.filter(task => task.id !== id));
+    if (id === activeTaskId) onSelect(null);
   };
 
-  const filters: { key: typeof filter; label: string }[] = [
-    { key: 'all', label: 'All' },
-    { key: 'electronics', label: 'ECE' },
-    { key: 'telecom', label: 'Telecom' },
-    { key: 'core', label: 'Core' },
-  ];
+  const toggleDone = (id: string) => {
+    setTasks(prev => prev.map(task => (task.id === id ? { ...task, done: !task.done } : task)));
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-[11px] font-display uppercase tracking-[0.2em] text-muted-foreground">Subjects</h3>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setShowNames(!showNames)} className="text-muted-foreground hover:text-foreground transition-colors" title={showNames ? 'Hide names' : 'Show names'}>
-            {showNames ? <EyeOff size={12} /> : <Eye size={12} />}
-          </button>
-          <button onClick={() => setAdding(!adding)} className="text-muted-foreground hover:text-primary transition-colors">
-            {adding ? <X size={14} /> : <Plus size={14} />}
-          </button>
-        </div>
+        <h3 className="text-[11px] font-display uppercase tracking-[0.2em] text-muted-foreground">Focus Tasks</h3>
+        <span className="text-[10px] font-display uppercase tracking-[0.15em] text-muted-foreground">Enter and pick one</span>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex gap-1">
-        {filters.map(f => (
-          <button
-            key={f.key}
-            onClick={() => setFilter(f.key)}
-            className={`text-[10px] font-display uppercase tracking-wider px-2.5 py-1 rounded-lg transition-colors ${filter === f.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="grid grid-cols-[1fr_88px_auto] gap-2">
+        <input
+          value={newTitle}
+          onChange={e => setNewTitle(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && createTask()}
+          placeholder="Add a task (todo)"
+          className="bg-secondary text-foreground text-sm px-3 py-2 rounded-lg border-none outline-none placeholder:text-muted-foreground"
+        />
+        <input
+          type="number"
+          min={1}
+          max={240}
+          value={newMinutes}
+          onChange={e => setNewMinutes(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && createTask()}
+          className="bg-secondary text-foreground text-sm px-3 py-2 rounded-lg border-none outline-none"
+        />
+        <button onClick={createTask} className="px-3 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
+          <Plus size={14} />
+        </button>
       </div>
 
-      {/* Add input */}
-      {adding && (
-        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="flex gap-2">
-          <input
-            value={newName}
-            onChange={e => setNewName(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && addSubject()}
-            placeholder="Subject name..."
-            className="flex-1 bg-secondary text-foreground text-sm px-3 py-1.5 rounded-lg border-none outline-none placeholder:text-muted-foreground"
-            autoFocus
-          />
-          <button onClick={addSubject} className="text-xs bg-primary text-primary-foreground px-3 rounded-lg font-display">Add</button>
-        </motion.div>
-      )}
+      <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+        {tasks.length === 0 && (
+          <div className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
+            No tasks yet. Add one and set minutes to focus.
+          </div>
+        )}
 
-      {/* Subject grid */}
-      <div className={`grid ${showNames ? 'grid-cols-2' : 'grid-cols-4'} gap-2 max-h-[260px] overflow-y-auto pr-1`}>
-        {filtered.map(sub => (
+        {tasks.map(task => (
           <motion.button
-            key={sub.id}
+            key={task.id}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onSelect(activeSubject === sub.name ? null : sub.name)}
-            className={`group relative text-center p-3 rounded-xl transition-all ${
-              activeSubject === sub.name
+            onClick={() => onSelect(activeTaskId === task.id ? null : task)}
+            className={`group relative w-full text-left p-3 rounded-xl transition-all ${
+              activeTaskId === task.id
                 ? 'bg-primary/10 border-glow glow-amber'
                 : 'bg-secondary/60 hover:bg-secondary'
             }`}
           >
-            <span className={showNames ? 'text-lg' : 'text-xl'}>{sub.icon}</span>
-            {showNames && (
-              <p className={`text-[11px] font-medium mt-1.5 leading-tight ${activeSubject === sub.name ? 'text-primary' : 'text-foreground'}`}>
-                {sub.name}
-              </p>
-            )}
-            {!defaultSubjects.find(d => d.id === sub.id) && (
-              <button
-                onClick={e => { e.stopPropagation(); removeSubject(sub.id); }}
-                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
-              >
-                <X size={10} />
-              </button>
-            )}
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className={`text-xs font-medium ${activeTaskId === task.id ? 'text-primary' : 'text-foreground'} ${task.done ? 'line-through text-muted-foreground' : ''}`}>
+                  {task.title}
+                </p>
+                <p className="text-[10px] mt-1 font-display uppercase tracking-[0.15em] text-muted-foreground">
+                  {task.minutes} min focus
+                </p>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={e => { e.stopPropagation(); toggleDone(task.id); }}
+                  className={`p-1.5 rounded-md transition-colors ${task.done ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  title={task.done ? 'Mark not done' : 'Mark done'}
+                >
+                  <Check size={12} />
+                </button>
+                <button
+                  onClick={e => { e.stopPropagation(); removeTask(task.id); }}
+                  className="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition-colors"
+                  title="Remove"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            </div>
           </motion.button>
         ))}
       </div>
