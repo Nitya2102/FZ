@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+To-do's and timer aint so plain now
 
-TODO: Document your project here
+ 
