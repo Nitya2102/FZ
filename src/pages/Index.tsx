@@ -3,130 +3,131 @@ import { motion } from 'framer-motion';
 import FocusTimer from '@/components/FocusTimer';
 import SubjectSelector from '@/components/SubjectSelector';
 import QuoteCard from '@/components/QuoteCard';
-import StatusBar from '@/components/StatusBar';
-import MiniNotes from '@/components/MiniNotes';
+import kakashiImg from '@/assets/kakashi.png';
+import deathnoteImg from '@/assets/deathnote.png';
 
 const Index = () => {
   const [activeSubject, setActiveSubject] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-background circuit-pattern">
-      <div className="min-h-screen bg-background/95">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <StatusBar />
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Subtle circuit grid */}
+      <div className="fixed inset-0 circuit-pattern opacity-30 pointer-events-none" />
 
-          {/* Header */}
+      {/* Kakashi visual — bottom left */}
+      <motion.img
+        src={kakashiImg}
+        alt=""
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 0.12, x: 0 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        className="fixed bottom-0 left-0 w-72 lg:w-96 pointer-events-none select-none"
+      />
+
+      {/* Death Note visual — top right */}
+      <motion.img
+        src={deathnoteImg}
+        alt=""
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 0.1, y: 0 }}
+        transition={{ delay: 0.7, duration: 1 }}
+        className="fixed top-8 right-8 w-32 lg:w-44 pointer-events-none select-none rotate-6"
+      />
+
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6">
+        {/* Minimal top bar */}
+        <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse-glow" />
+            <span className="text-[11px] font-display uppercase tracking-[0.25em] text-muted-foreground">Online</span>
+          </div>
+          <TimeDisplay />
+        </div>
+
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-14"
+        >
+          <h1 className="text-4xl sm:text-5xl font-display font-light text-foreground tracking-tight">
+            Lock <span className="text-primary glow-amber-text font-medium">In</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-3 font-light tracking-wide">
+            No shortcuts. Just execution.
+          </p>
+        </motion.div>
+
+        {/* Two column: Timer + Subjects */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+          {/* Timer */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center pt-8 pb-10"
+            transition={{ delay: 0.15 }}
+            className="bg-card/80 backdrop-blur-sm rounded-2xl p-8 border border-border"
           >
-            <h1 className="text-2xl sm:text-3xl font-mono font-light text-foreground tracking-tight">
-              Lock <span className="text-primary glow-amber-text">In</span>
-            </h1>
-            <p className="text-xs font-mono text-muted-foreground mt-2 tracking-[0.15em] uppercase">
-              Execute the plan. No distractions.
-            </p>
+            <FocusTimer activeSubject={activeSubject} />
           </motion.div>
 
-          {/* Main grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-12">
-            {/* Left panel - Subjects */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="lg:col-span-4 space-y-6"
-            >
-              <div className="bg-card rounded-xl p-5 border border-border">
-                <SubjectSelector activeSubject={activeSubject} onSelect={setActiveSubject} />
-              </div>
-              <div className="bg-card rounded-xl p-5 border border-border">
-                <MiniNotes />
-              </div>
-            </motion.div>
+          {/* Subjects */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 border border-border"
+          >
+            <SubjectSelector activeSubject={activeSubject} onSelect={setActiveSubject} />
+          </motion.div>
+        </div>
 
-            {/* Center - Timer */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="lg:col-span-4 flex flex-col items-center"
-            >
-              <div className="bg-card rounded-xl p-8 border border-border w-full">
-                <FocusTimer activeSubject={activeSubject} />
-              </div>
+        {/* Quote + Status row */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="lg:col-span-3"
+          >
+            <QuoteCard />
+          </motion.div>
 
-              {/* Motivational strip */}
-              <div className="mt-6 w-full">
-                <QuoteCard />
-              </div>
-            </motion.div>
-
-            {/* Right panel - Stats & vibes */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="lg:col-span-4 space-y-4"
-            >
-              {/* Today's mission */}
-              <div className="bg-card rounded-xl p-5 border border-border">
-                <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground mb-4">Today's Protocol</h3>
-                <div className="space-y-3">
-                  <ProtocolItem emoji="♟️" text="Think 3 moves ahead" />
-                  <ProtocolItem emoji="📓" text="Write the name of the topic. Master it." />
-                  <ProtocolItem emoji="🍥" text="Never give up. That's your ninja way." />
-                  <ProtocolItem emoji="⚡" text="Circuits don't lie. Solve until clean." />
-                </div>
-              </div>
-
-              {/* Quick stats */}
-              <div className="grid grid-cols-2 gap-3">
-                <StatCard label="Mode" value="Deep Work" icon="🎯" />
-                <StatCard label="Style" value="Strategic" icon="♛" />
-              </div>
-
-              {/* Circuit element */}
-              <div className="bg-card rounded-xl p-5 border border-border">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-2 h-2 rounded-full bg-accent animate-pulse-glow" />
-                  <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground">System Status</span>
-                </div>
-                <div className="space-y-2">
-                  <StatusLine label="Focus" value="Online" ok />
-                  <StatusLine label="Distractions" value="Blocked" ok />
-                  <StatusLine label="Brain" value="Overclocked" ok />
-                  <StatusLine label="Excuses" value="404 Not Found" ok />
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="lg:col-span-2 bg-card/60 backdrop-blur-sm rounded-2xl p-5 border border-border"
+          >
+            <h3 className="text-[11px] font-display uppercase tracking-[0.2em] text-muted-foreground mb-4">System</h3>
+            <div className="space-y-2.5">
+              <StatusLine label="Focus" value="Online" />
+              <StatusLine label="Distractions" value="Blocked" />
+              <StatusLine label="Excuses" value="404" />
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>
   );
 };
 
-const ProtocolItem = ({ emoji, text }: { emoji: string; text: string }) => (
-  <div className="flex items-start gap-3">
-    <span className="text-sm mt-0.5">{emoji}</span>
-    <p className="text-xs text-secondary-foreground leading-relaxed">{text}</p>
-  </div>
-);
+const TimeDisplay = () => {
+  const [time, setTime] = useState(new Date());
+  useState(() => {
+    const t = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(t);
+  });
+  return (
+    <span className="text-[11px] font-display text-muted-foreground tabular-nums tracking-wider">
+      {time.toLocaleTimeString('en-US', { hour12: false })}
+    </span>
+  );
+};
 
-const StatCard = ({ label, value, icon }: { label: string; value: string; icon: string }) => (
-  <div className="bg-card rounded-xl p-4 border border-border text-center">
-    <span className="text-lg">{icon}</span>
-    <p className="text-xs font-mono text-primary mt-1">{value}</p>
-    <p className="text-[10px] text-muted-foreground font-mono uppercase">{label}</p>
-  </div>
-);
-
-const StatusLine = ({ label, value, ok }: { label: string; value: string; ok: boolean }) => (
-  <div className="flex items-center justify-between text-[11px] font-mono">
-    <span className="text-muted-foreground">{label}</span>
-    <span className={ok ? 'text-accent' : 'text-destructive'}>{value}</span>
+const StatusLine = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex items-center justify-between text-[12px]">
+    <span className="text-muted-foreground font-light">{label}</span>
+    <span className="text-accent font-display tracking-wider">{value}</span>
   </div>
 );
 

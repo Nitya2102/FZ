@@ -44,7 +44,7 @@ const QuoteCard = () => {
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-sm">{sourceIcons[quote.source]}</span>
-          <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground">
+          <span className="text-[10px] font-display uppercase tracking-[0.15em] text-muted-foreground">
             {sourceLabels[quote.source]}
           </span>
         </div>
@@ -64,7 +64,7 @@ const QuoteCard = () => {
           <p className="text-sm text-foreground leading-relaxed italic">
             "{quote.text}"
           </p>
-          <p className="text-xs text-muted-foreground mt-2 font-mono">
+          <p className="text-xs text-muted-foreground mt-2 font-display">
             — {quote.author}
           </p>
         </motion.div>

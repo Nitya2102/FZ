@@ -15,7 +15,7 @@ const MiniNotes = () => {
 
   return (
     <div className="space-y-3">
-      <button onClick={() => setOpen(!open)} className="flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors w-full">
+      <button onClick={() => setOpen(!open)} className="flex items-center gap-2 text-xs font-display uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors w-full">
         <FileText size={12} />
         <span>Quick Notes</span>
         <span className="ml-auto text-[10px] bg-secondary px-1.5 py-0.5 rounded">{notes.length}</span>
@@ -29,7 +29,7 @@ const MiniNotes = () => {
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && add()}
               placeholder="Quick thought..."
-              className="flex-1 bg-secondary text-foreground text-xs px-3 py-1.5 rounded-lg outline-none placeholder:text-muted-foreground font-mono"
+              className="flex-1 bg-secondary text-foreground text-xs px-3 py-1.5 rounded-lg outline-none placeholder:text-muted-foreground font-display"
             />
             <button onClick={add} className="text-muted-foreground hover:text-primary"><Plus size={14} /></button>
           </div>

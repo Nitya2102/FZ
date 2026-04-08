@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { defaultSubjects, Subject } from '@/data/subjects';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Eye, EyeOff } from 'lucide-react';
 
 interface SubjectSelectorProps {
   activeSubject: string | null;
@@ -12,6 +12,7 @@ const SubjectSelector = ({ activeSubject, onSelect }: SubjectSelectorProps) => {
   const [subjects, setSubjects] = useState<Subject[]>(defaultSubjects);
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState('');
+  const [showNames, setShowNames] = useState(true);
   const [filter, setFilter] = useState<'all' | 'electronics' | 'telecom' | 'core'>('all');
 
   const filtered = filter === 'all' ? subjects : subjects.filter(s => s.category === filter);
@@ -39,10 +40,15 @@ const SubjectSelector = ({ activeSubject, onSelect }: SubjectSelectorProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">Subjects</h3>
-        <button onClick={() => setAdding(!adding)} className="text-muted-foreground hover:text-primary transition-colors">
-          {adding ? <X size={14} /> : <Plus size={14} />}
-        </button>
+        <h3 className="text-[11px] font-display uppercase tracking-[0.2em] text-muted-foreground">Subjects</h3>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowNames(!showNames)} className="text-muted-foreground hover:text-foreground transition-colors" title={showNames ? 'Hide names' : 'Show names'}>
+            {showNames ? <EyeOff size={12} /> : <Eye size={12} />}
+          </button>
+          <button onClick={() => setAdding(!adding)} className="text-muted-foreground hover:text-primary transition-colors">
+            {adding ? <X size={14} /> : <Plus size={14} />}
+          </button>
+        </div>
       </div>
 
       {/* Filter tabs */}
@@ -51,7 +57,7 @@ const SubjectSelector = ({ activeSubject, onSelect }: SubjectSelectorProps) => {
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded transition-colors ${filter === f.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`text-[10px] font-display uppercase tracking-wider px-2.5 py-1 rounded-lg transition-colors ${filter === f.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
             {f.label}
           </button>
@@ -66,30 +72,32 @@ const SubjectSelector = ({ activeSubject, onSelect }: SubjectSelectorProps) => {
             onChange={e => setNewName(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && addSubject()}
             placeholder="Subject name..."
-            className="flex-1 bg-secondary text-foreground text-sm px-3 py-1.5 rounded-lg border-none outline-none placeholder:text-muted-foreground font-mono"
+            className="flex-1 bg-secondary text-foreground text-sm px-3 py-1.5 rounded-lg border-none outline-none placeholder:text-muted-foreground"
             autoFocus
           />
-          <button onClick={addSubject} className="text-xs font-mono bg-primary text-primary-foreground px-3 rounded-lg">Go</button>
+          <button onClick={addSubject} className="text-xs bg-primary text-primary-foreground px-3 rounded-lg font-display">Add</button>
         </motion.div>
       )}
 
       {/* Subject grid */}
-      <div className="grid grid-cols-2 gap-2 max-h-[280px] overflow-y-auto pr-1">
+      <div className={`grid ${showNames ? 'grid-cols-2' : 'grid-cols-4'} gap-2 max-h-[260px] overflow-y-auto pr-1`}>
         {filtered.map(sub => (
           <motion.button
             key={sub.id}
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => onSelect(activeSubject === sub.name ? null : sub.name)}
-            className={`group relative text-left p-3 rounded-lg transition-all text-sm ${
+            className={`group relative text-center p-3 rounded-xl transition-all ${
               activeSubject === sub.name
                 ? 'bg-primary/10 border-glow glow-amber'
-                : 'bg-secondary hover:bg-muted'
+                : 'bg-secondary/60 hover:bg-secondary'
             }`}
           >
-            <span className="text-base">{sub.icon}</span>
-            <p className={`text-xs font-medium mt-1 leading-tight ${activeSubject === sub.name ? 'text-primary' : 'text-foreground'}`}>
-              {sub.name}
-            </p>
+            <span className={showNames ? 'text-lg' : 'text-xl'}>{sub.icon}</span>
+            {showNames && (
+              <p className={`text-[11px] font-medium mt-1.5 leading-tight ${activeSubject === sub.name ? 'text-primary' : 'text-foreground'}`}>
+                {sub.name}
+              </p>
+            )}
             {!defaultSubjects.find(d => d.id === sub.id) && (
               <button
                 onClick={e => { e.stopPropagation(); removeSubject(sub.id); }}
