@@ -4,7 +4,7 @@ import FocusTimer from '@/components/FocusTimer';
 import SubjectSelector from '@/components/SubjectSelector';
 import QuoteCard from '@/components/QuoteCard';
 import kakashiImg from '@/assets/kakashi.png';
-import deathnoteImg from '@/assets/deathnote.png';
+import chessPawnImg from '@/assets/chess-pawn.png';
 
 const Index = () => {
   const [activeSubject, setActiveSubject] = useState<string | null>(null);
@@ -14,24 +14,24 @@ const Index = () => {
       {/* Subtle circuit grid */}
       <div className="fixed inset-0 circuit-pattern opacity-30 pointer-events-none" />
 
-      {/* Kakashi visual — bottom left */}
+      {/* Kakashi — prominent, bottom right */}
       <motion.img
         src={kakashiImg}
         alt=""
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 0.12, x: 0 }}
-        transition={{ delay: 0.5, duration: 1 }}
-        className="fixed bottom-0 left-0 w-72 lg:w-96 pointer-events-none select-none"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 0.25, y: 0 }}
+        transition={{ delay: 0.4, duration: 1.2 }}
+        className="fixed bottom-0 right-0 w-80 lg:w-[28rem] pointer-events-none select-none"
       />
 
-      {/* Death Note visual — top right */}
+      {/* Chess pawn — top left accent */}
       <motion.img
-        src={deathnoteImg}
+        src={chessPawnImg}
         alt=""
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 0.1, y: 0 }}
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 0.15, y: 0 }}
         transition={{ delay: 0.7, duration: 1 }}
-        className="fixed top-8 right-8 w-32 lg:w-44 pointer-events-none select-none rotate-6"
+        className="fixed top-12 left-10 w-20 lg:w-28 pointer-events-none select-none -rotate-6"
       />
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6">
