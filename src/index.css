@@ -59,13 +59,13 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Outfit', sans-serif;
   }
 }
 
 @layer utilities {
-  .font-mono-display {
-    font-family: 'JetBrains Mono', monospace;
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
   }
 
   .glow-amber {
