@@ -70,7 +70,7 @@ const FocusTimer = ({ activeSubject }: FocusTimerProps) => {
       {/* Status */}
       <div className="flex items-center gap-2">
         <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-primary animate-pulse-glow' : 'bg-muted-foreground'}`} />
-        <span className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">
+        <span className="text-xs font-display uppercase tracking-[0.2em] text-muted-foreground">
           {isBreak ? 'Break time' : isRunning ? 'Locked in' : 'Ready'}
         </span>
       </div>
@@ -94,14 +94,14 @@ const FocusTimer = ({ activeSubject }: FocusTimerProps) => {
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <motion.span
             key={timeLeft}
-            className="text-4xl font-mono font-light text-foreground glow-amber-text"
+            className="text-4xl font-display font-light text-foreground glow-amber-text"
             initial={{ opacity: 0.7 }}
             animate={{ opacity: 1 }}
           >
             {formatTime(timeLeft)}
           </motion.span>
           {activeSubject && (
-            <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mt-2 max-w-[120px] text-center truncate">
+            <span className="text-[10px] font-display uppercase tracking-[0.15em] text-muted-foreground mt-2 max-w-[120px] text-center truncate">
               {activeSubject}
             </span>
           )}
@@ -138,7 +138,7 @@ const FocusTimer = ({ activeSubject }: FocusTimerProps) => {
         {Array.from({ length: Math.max(0, 8 - sessionsCompleted) }).map((_, i) => (
           <div key={`e-${i}`} className="w-2 h-2 rounded-full bg-secondary" />
         ))}
-        <span className="text-[10px] font-mono text-muted-foreground ml-2">{sessionsCompleted} done</span>
+        <span className="text-[10px] font-display text-muted-foreground ml-2">{sessionsCompleted} done</span>
       </div>
     </div>
   );
