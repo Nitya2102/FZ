@@ -74,7 +74,7 @@ const FocusTimer = ({ activeTask }: FocusTimerProps) => {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-5 sm:gap-6">
       {/* Status */}
       <div className="flex items-center gap-2">
         <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-primary animate-pulse-glow' : 'bg-muted-foreground'}`} />
@@ -84,7 +84,7 @@ const FocusTimer = ({ activeTask }: FocusTimerProps) => {
       </div>
 
       {/* Timer circle */}
-      <div className="relative w-52 h-52">
+      <div className="relative w-44 h-44 sm:w-52 sm:h-52">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
           <circle cx="100" cy="100" r="90" fill="none" stroke="hsl(var(--border))" strokeWidth="2" />
           <motion.circle
@@ -102,7 +102,7 @@ const FocusTimer = ({ activeTask }: FocusTimerProps) => {
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <motion.span
             key={timeLeft}
-            className="text-4xl font-display font-light text-foreground glow-amber-text"
+            className="text-3xl sm:text-4xl font-display font-light text-foreground glow-amber-text"
             initial={{ opacity: 0.7 }}
             animate={{ opacity: 1 }}
           >
@@ -117,24 +117,24 @@ const FocusTimer = ({ activeTask }: FocusTimerProps) => {
       </div>
 
       {/* Controls */}
-      <div className="flex items-center gap-3">
-        <button onClick={reset} className="p-2.5 rounded-lg bg-secondary text-secondary-foreground hover:bg-muted transition-colors">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <button onClick={reset} className="p-2 sm:p-2.5 rounded-lg bg-secondary text-secondary-foreground hover:bg-muted transition-colors">
           <RotateCcw size={16} />
         </button>
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsRunning(!isRunning)}
-          className="p-4 rounded-xl bg-primary text-primary-foreground glow-amber transition-all hover:opacity-90"
+          className="p-3 sm:p-4 rounded-xl bg-primary text-primary-foreground glow-amber transition-all hover:opacity-90"
         >
           {isRunning ? <Pause size={20} /> : <Play size={20} className="ml-0.5" />}
         </motion.button>
-        <button onClick={toggleBreak} className={`p-2.5 rounded-lg transition-colors ${isBreak ? 'bg-accent text-accent-foreground glow-teal' : 'bg-secondary text-secondary-foreground hover:bg-muted'}`}>
+        <button onClick={toggleBreak} className={`p-2 sm:p-2.5 rounded-lg transition-colors ${isBreak ? 'bg-accent text-accent-foreground glow-teal' : 'bg-secondary text-secondary-foreground hover:bg-muted'}`}>
           <Coffee size={16} />
         </button>
       </div>
 
       {/* Sessions */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center justify-center gap-1.5">
         {Array.from({ length: Math.min(sessionsCompleted, 8) }).map((_, i) => (
           <motion.div
             key={i}

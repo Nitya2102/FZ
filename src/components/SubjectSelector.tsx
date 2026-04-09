@@ -49,12 +49,12 @@ const SubjectSelector = ({ activeTaskId, onSelect }: SubjectSelectorProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <h3 className="text-[11px] font-display uppercase tracking-[0.2em] text-muted-foreground">Focus Tasks</h3>
         <span className="text-[10px] font-display uppercase tracking-[0.15em] text-muted-foreground">Enter and pick one</span>
       </div>
 
-      <div className="grid grid-cols-[1fr_88px_auto] gap-2">
+      <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[1fr_88px_auto]">
         <input
           value={newTitle}
           onChange={e => setNewTitle(e.target.value)}
@@ -62,18 +62,20 @@ const SubjectSelector = ({ activeTaskId, onSelect }: SubjectSelectorProps) => {
           placeholder="Add a task (todo)"
           className="bg-secondary text-foreground text-sm px-3 py-2 rounded-lg border-none outline-none placeholder:text-muted-foreground"
         />
-        <input
-          type="number"
-          min={1}
-          max={240}
-          value={newMinutes}
-          onChange={e => setNewMinutes(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && createTask()}
-          className="bg-secondary text-foreground text-sm px-3 py-2 rounded-lg border-none outline-none"
-        />
-        <button onClick={createTask} className="px-3 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
-          <Plus size={14} />
-        </button>
+        <div className="grid grid-cols-[1fr_auto] gap-2 sm:contents">
+          <input
+            type="number"
+            min={1}
+            max={240}
+            value={newMinutes}
+            onChange={e => setNewMinutes(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && createTask()}
+            className="bg-secondary text-foreground text-sm px-3 py-2 rounded-lg border-none outline-none"
+          />
+          <button onClick={createTask} className="h-full px-3 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity flex items-center justify-center">
+            <Plus size={14} />
+          </button>
+        </div>
       </div>
 
       <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
@@ -95,8 +97,8 @@ const SubjectSelector = ({ activeTaskId, onSelect }: SubjectSelectorProps) => {
             }`}
           >
             <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className={`text-xs font-medium ${activeTaskId === task.id ? 'text-primary' : 'text-foreground'} ${task.done ? 'line-through text-muted-foreground' : ''}`}>
+              <div className="min-w-0">
+                <p className={`text-xs font-medium truncate ${activeTaskId === task.id ? 'text-primary' : 'text-foreground'} ${task.done ? 'line-through text-muted-foreground' : ''}`}>
                   {task.title}
                 </p>
                 <p className="text-[10px] mt-1 font-display uppercase tracking-[0.15em] text-muted-foreground">

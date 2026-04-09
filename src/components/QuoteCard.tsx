@@ -35,15 +35,15 @@ const QuoteCard = () => {
   }, [quote]);
 
   return (
-    <div className="relative p-5 rounded-xl bg-secondary/50 border-glow overflow-hidden">
+    <div className="relative p-4 sm:p-5 rounded-xl bg-secondary/50 border-glow overflow-hidden">
       {/* Background accent */}
       <div className="absolute top-0 right-0 text-6xl opacity-[0.04] select-none pointer-events-none">
         {sourceIcons[quote.source]}
       </div>
 
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex items-start justify-between mb-2 sm:mb-3 gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm">{sourceIcons[quote.source]}</span>
+          <span className="text-xs sm:text-sm">{sourceIcons[quote.source]}</span>
           <span className="text-[10px] font-display uppercase tracking-[0.15em] text-muted-foreground">
             {sourceLabels[quote.source]}
           </span>
@@ -61,7 +61,7 @@ const QuoteCard = () => {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.3 }}
         >
-          <p className="text-sm text-foreground leading-relaxed italic">
+          <p className="text-xs sm:text-sm text-foreground leading-relaxed italic">
             "{quote.text}"
           </p>
           <p className="text-xs text-muted-foreground mt-2 font-display">
