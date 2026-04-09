@@ -13,6 +13,18 @@ const quotePool = [
   ['One', 'chapter', 'a', 'day', 'keeps', 'the', 'cram', 'away.'],
   ['Highlighter', 'ready,', 'brain', 'loading,', 'chaos', 'pending.'],
   ['Notes', 'first,', 'scrolling', 'later,', 'victory', 'always.'],
+  ['Discipline', 'is', 'boring,', 'but', 'regret', 'is', 'worse.'],
+  ['Focus', 'for', '25,', 'rest', 'for', '5,', 'repeat.'],
+  ['Tiny', 'progress', 'today,', 'huge', 'confidence', 'tomorrow.'],
+  ['Silence', 'the', 'noise,', 'amplify', 'the', 'goal.'],
+  ['Do', 'the', 'hard', 'thing', 'before', 'the', 'easy', 'distraction.'],
+  ['Pages', 'done', 'beat', 'plans', 'made', 'every', 'time.'],
+  ['Clock', 'running,', 'phone', 'down,', 'mind', 'up.'],
+  ['Start', 'messy,', 'finish', 'sharp,', 'learn', 'fast.'],
+  ['Consistency', 'looks', 'small,', 'until', 'results', 'arrive.'],
+  ['Win', 'the', 'hour,', 'and', 'you', 'win', 'the', 'day.'],
+  ['Less', 'perfect,', 'more', 'finished,', 'more', 'growth.'],
+  ['Future', 'you', 'is', 'built', 'by', 'today', 'you.'],
 ];
 
 const shuffle = (words: QuoteWord[]) => {

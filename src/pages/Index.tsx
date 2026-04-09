@@ -5,6 +5,7 @@ import SubjectSelector from '@/components/SubjectSelector';
 import type { FocusTask } from '@/components/SubjectSelector';
 import QuoteCard from '@/components/QuoteCard';
 import JumbledQuote from '@/components/JumbledQuote';
+import MiniReactionTimer from '@/components/MiniReactionTimer';
 import kakashiImg from '@/assets/kakashi.png';
 
 const Index = () => {
@@ -52,17 +53,28 @@ const Index = () => {
           <JumbledQuote />
         </motion.div>
 
-        {/* Two column: Timer + Subjects */}
+        {/* Two column: Left utilities + Subjects */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8 mb-8 sm:mb-10">
-          {/* Timer */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="bg-card/80 backdrop-blur-sm rounded-2xl p-5 sm:p-8 border border-border"
-          >
-            <FocusTimer activeTask={activeTask} />
-          </motion.div>
+          {/* Left side: Timer + Reaction */}
+          <div className="grid gap-5 sm:gap-6 content-start">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="bg-card/80 backdrop-blur-sm rounded-2xl p-5 sm:p-8 border border-border"
+            >
+              <FocusTimer activeTask={activeTask} />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 sm:p-5 border border-border"
+            >
+              <MiniReactionTimer />
+            </motion.div>
+          </div>
 
           {/* Subjects */}
           <motion.div
