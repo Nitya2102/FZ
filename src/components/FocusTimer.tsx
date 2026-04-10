@@ -15,7 +15,8 @@ const FocusTimer = ({ activeTask }: FocusTimerProps) => {
   const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [sessionsCompleted, setSessions] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [targetTimeMs, setTargetTimeMs] = useState<number | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const totalTime = isBreak ? BREAK_TIME : focusTime;
   const progress = ((totalTime - timeLeft) / totalTime) * 100;
@@ -28,6 +29,7 @@ const FocusTimer = ({ activeTask }: FocusTimerProps) => {
 
   const reset = useCallback(() => {
     setIsRunning(false);
+    setTargetTimeMs(null);
     setIsBreak(false);
     setTimeLeft(focusTime);
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -35,6 +37,7 @@ const FocusTimer = ({ activeTask }: FocusTimerProps) => {
 
   const toggleBreak = useCallback(() => {
     setIsRunning(false);
+    setTargetTimeMs(null);
     if (intervalRef.current) clearInterval(intervalRef.current);
     if (isBreak) {
       setIsBreak(false);
@@ -47,28 +50,52 @@ const FocusTimer = ({ activeTask }: FocusTimerProps) => {
 
   useEffect(() => {
     setIsRunning(false);
+    setTargetTimeMs(null);
     setIsBreak(false);
     setTimeLeft(focusTime);
     if (intervalRef.current) clearInterval(intervalRef.current);
   }, [focusTime]);
 
   useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = setInterval(() => {
+    if (isRunning && targetTimeMs !== null) {
+      const syncWithClock = () => {
+        const next = Math.max(0, Math.ceil((targetTimeMs - Date.now()) / 1000));
         setTimeLeft(prev => {
-          if (prev <= 1) {
+          if (prev === 0) return 0;
+          if (next === 0) {
             setIsRunning(false);
+            setTargetTimeMs(null);
             if (!isBreak) {
               setSessions(s => s + 1);
             }
             return 0;
           }
-          return prev - 1;
+          return prev === next ? prev : next;
         });
-      }, 1000);
+      };
+
+      syncWithClock();
+      intervalRef.current = setInterval(syncWithClock, 250);
     }
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [isRunning, isBreak]);
+  }, [isRunning, isBreak, targetTimeMs]);
+
+  const toggleRunning = useCallback(() => {
+    if (isRunning) {
+      if (targetTimeMs !== null) {
+        const remaining = Math.max(0, Math.ceil((targetTimeMs - Date.now()) / 1000));
+        setTimeLeft(remaining);
+      }
+      setIsRunning(false);
+      setTargetTimeMs(null);
+      return;
+    }
+
+    if (timeLeft <= 0) return;
+
+    setTargetTimeMs(Date.now() + timeLeft * 1000);
+    setIsRunning(true);
+  }, [isRunning, targetTimeMs, timeLeft]);
 
   const circumference = 2 * Math.PI * 90;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -123,7 +150,7 @@ const FocusTimer = ({ activeTask }: FocusTimerProps) => {
         </button>
         <motion.button
           whileTap={{ scale: 0.95 }}
-          onClick={() => setIsRunning(!isRunning)}
+          onClick={toggleRunning}
           className="p-3 sm:p-4 rounded-xl bg-primary text-primary-foreground glow-amber transition-all hover:opacity-90"
         >
           {isRunning ? <Pause size={20} /> : <Play size={20} className="ml-0.5" />}
