@@ -1,50 +1,102 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Plus, X } from 'lucide-react';
+import type { FocusTask } from '@/lib/focus-task';
+import { isFirebaseConfigured } from '@/lib/firebase';
+import { createTodo, ensureSignedInUser, softDeleteTodo, subscribeTodos, toggleTodoDone } from '@/lib/todo-store';
+
+export type { FocusTask } from '@/lib/focus-task';
 
 interface SubjectSelectorProps {
   activeTaskId: string | null;
   onSelect: (task: FocusTask | null) => void;
 }
 
-export interface FocusTask {
-  id: string;
-  title: string;
-  minutes: number;
-  done: boolean;
-}
-
 const SubjectSelector = ({ activeTaskId, onSelect }: SubjectSelectorProps) => {
   const [tasks, setTasks] = useState<FocusTask[]>([]);
   const [newTitle, setNewTitle] = useState('');
   const [newMinutes, setNewMinutes] = useState('25');
+  const [uid, setUid] = useState<string | null>(null);
 
-  const createTask = () => {
+  useEffect(() => {
+    if (!isFirebaseConfigured) return;
+
+    let unsub: (() => void) | null = null;
+    let cancelled = false;
+
+    ensureSignedInUser()
+      .then((resolvedUid) => {
+        if (cancelled) return;
+        setUid(resolvedUid);
+        unsub = subscribeTodos(
+          resolvedUid,
+          setTasks,
+          (error) => console.error('Failed to subscribe todos:', error),
+        );
+      })
+      .catch((error) => {
+        console.error('Failed to initialize Firebase todos:', error);
+      });
+
+    return () => {
+      cancelled = true;
+      if (unsub) unsub();
+    };
+  }, []);
+
+  const createTask = async () => {
     const title = newTitle.trim();
     const parsedMinutes = Number(newMinutes);
     const minutes = Number.isFinite(parsedMinutes) ? Math.max(1, Math.min(240, Math.floor(parsedMinutes))) : 25;
 
     if (!title) return;
 
-    const task: FocusTask = {
-      id: Date.now().toString(),
-      title,
-      minutes,
-      done: false,
-    };
+    if (uid) {
+      try {
+        await createTodo(uid, title, minutes);
+      } catch (error) {
+        console.error('Failed to create todo:', error);
+      }
+    } else {
+      const task: FocusTask = {
+        id: Date.now().toString(),
+        title,
+        minutes,
+        done: false,
+      };
 
-    setTasks(prev => [task, ...prev]);
+      setTasks(prev => [task, ...prev]);
+    }
+
     setNewTitle('');
     setNewMinutes('25');
   };
 
-  const removeTask = (id: string) => {
-    setTasks(prev => prev.filter(task => task.id !== id));
-    if (id === activeTaskId) onSelect(null);
+  const removeTask = async (task: FocusTask) => {
+    if (uid) {
+      try {
+        await softDeleteTodo(uid, task);
+      } catch (error) {
+        console.error('Failed to delete todo:', error);
+      }
+    } else {
+      setTasks(prev => prev.filter((item) => item.id !== task.id));
+    }
+
+    if (task.id === activeTaskId) onSelect(null);
   };
 
-  const toggleDone = (id: string) => {
-    setTasks(prev => prev.map(task => (task.id === id ? { ...task, done: !task.done } : task)));
+  const toggleDone = async (task: FocusTask) => {
+    if (uid) {
+      try {
+        await toggleTodoDone(uid, task);
+      } catch (error) {
+        console.error('Failed to toggle todo:', error);
+      }
+      return;
+    }
+
+    setTasks(prev => prev.map(item => (item.id === task.id ? { ...item, done: !item.done } : item)));
   };
 
   return (
@@ -107,14 +159,14 @@ const SubjectSelector = ({ activeTaskId, onSelect }: SubjectSelectorProps) => {
               </div>
               <div className="flex items-center gap-1">
                 <button
-                  onClick={e => { e.stopPropagation(); toggleDone(task.id); }}
+                  onClick={e => { e.stopPropagation(); void toggleDone(task); }}
                   className={`p-1.5 rounded-md transition-colors ${task.done ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                   title={task.done ? 'Mark not done' : 'Mark done'}
                 >
                   <Check size={12} />
                 </button>
                 <button
-                  onClick={e => { e.stopPropagation(); removeTask(task.id); }}
+                  onClick={e => { e.stopPropagation(); void removeTask(task); }}
                   className="p-1.5 rounded-md text-muted-foreground hover:text-destructive transition-colors"
                   title="Remove"
                 >

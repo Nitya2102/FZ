@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import FocusTimer from '@/components/FocusTimer';
 import SubjectSelector from '@/components/SubjectSelector';
-import type { FocusTask } from '@/components/SubjectSelector';
+import type { FocusTask } from '@/lib/focus-task';
 import QuoteCard from '@/components/QuoteCard';
 import JumbledQuote from '@/components/JumbledQuote';
 import MiniReactionTimer from '@/components/MiniReactionTimer';
